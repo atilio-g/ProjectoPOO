@@ -67,7 +67,7 @@ public:
 	RegistroReceta crearRegistro();
 	
 	/// devuelve el ingrediente que se encuentra en la posición i del vector
-	Ingrediente operator[](size_t i);
+	Ingrediente operator[](size_t i) const;
 	
 	/// devuelve true si los id coinciden
 	bool operator==(int id_receta);

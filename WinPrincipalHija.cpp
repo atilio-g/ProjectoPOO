@@ -1,14 +1,16 @@
+#include "wxfb_project.h"
 #include "WinPrincipalHija.h"
 #include "ConversionDatos.h"
 #include "DialogHijaInsumoAgregar.h"
 #include "DialogHijaInsumoEditar.h"
 #include "DialogHijaRecetas.h"
-#include "Receta.h"
+#include "DialogHijaProducciones.h"
 #include "Insumo.h"
+#include "Receta.h"
+#include "OrdenProduccion.h"
 #include <wx/wx.h>
 #include <vector>
 #include <string>
-
 
 /// CONSTRUCTOR
 WinPrincipalHija::WinPrincipalHija(wxWindow *parent, GestorPanaderia *gestor) :
@@ -56,20 +58,21 @@ WinPrincipalHija::WinPrincipalHija(wxWindow *parent, GestorPanaderia *gestor) :
 	m_recetas_grilla->SetColFormatFloat(3, -1, 2);
 	
 	/// producción
-	// cargo lista de productos
-	this->prod_cargarListaProductos();
-	
 	//se seleccionan filas, no celdas aisladas 
 	m_prod_grilla->SetSelectionMode(wxGrid::wxGridSelectRows);
 	
-	// columna producto de solo lectura
-	wxGridCellAttr* attrSoloLeer = new wxGridCellAttr;
-	attrSoloLeer->SetReadOnly();
-	m_prod_grilla->SetColAttr(1, attrSoloLeer);
+	// cargo grilla
+	int cantidad_prod = gestor->verCantidadProducciones();
+	m_prod_grilla->AppendRows(cantidad_prod);
+	for (int i=0; i<cantidad_prod; ++i)
+	{
+		OrdenProduccion prod = ( m_gestor->verVectorProduccion() )[i];
+		prod_cargarFila( i, prod );
+	}
 	
-	// columna cantidad solo números
+	// configuro columnas
 	m_prod_grilla->SetColFormatNumber(2);
-	
+	m_prod_grilla->SetColFormatFloat(3, -1, 2);
 }
 
 WinPrincipalHija::~WinPrincipalHija() {
@@ -282,7 +285,6 @@ void WinPrincipalHija::rec_OnGrillaLabelClick( wxGridEvent& event )
 	
 	// actualiza grilla manteniendo la búsqueda si la hay
 	this->rec_OnTextBusqueda(event);
-	this->prod_cargarListaProductos();
 }
 
 
@@ -297,7 +299,6 @@ void WinPrincipalHija::rec_OnClickNuevo( wxCommandEvent& event )
 		// si los datos son correctos: agrega la receta, actualiza grilla y archivos
 		m_recetas_grilla->AppendRows(1);
 		rec_cargarFila( m_gestor->verCantidadRecetas() - 1 );
-		this->prod_cargarListaProductos();
 	}
 	
 }
@@ -313,12 +314,10 @@ void WinPrincipalHija::rec_editarSeleccion()
 	// abre ventana para cargar datos
 	DialogHijaRecetas nuevo_dialog(this, m_gestor, rec);
 	
+	// si los datos son correctos: modifica la receta, actualiza grilla y archivos
 	if ( nuevo_dialog.ShowModal() == 1 )
-	{ 
-		// si los datos son correctos: modifica la receta, actualiza grilla y archivos
 		rec_cargarFila(fila);
-		this->prod_cargarListaProductos();
-	}
+
 }
 
 
@@ -355,7 +354,6 @@ void WinPrincipalHija::rec_OnClickEliminar( wxCommandEvent& event )
 		m_recetas_grilla->DeleteRows(fila);
 		m_gestor->eliminarReceta(id);
 		m_gestor->guardarTodo();
-		this->prod_cargarListaProductos();
 	}
 }
 
@@ -363,161 +361,86 @@ void WinPrincipalHija::rec_OnClickEliminar( wxCommandEvent& event )
 
 /////////////////////// INICIO PARTE DE PRODUCCION ////////////////////////
 
-/// CARGAR DATOS
-/// Cargar lista para seleccionar producto
-void WinPrincipalHija::prod_cargarListaProductos()
+void WinPrincipalHija::prod_cargarFila(int pos)
 {
-	m_prod_lista->Clear();
-	const std::vector<Receta> &lista_rec = m_gestor->verVectorRecetas();
-	int cant_rec = m_gestor->verCantidadRecetas();
+	OrdenProduccion prod = ( m_gestor->verVectorProduccion() )[pos];
 	
-	for (int i=0; i<cant_rec; ++i)
-	{
-		Receta rec_aux = lista_rec[i];
-		
-		// cada dato de la listbox se guarda como un par: 
-		// value [visible] = nombre 
-		// clientdata [oculto] = puntero void a receta
-		m_prod_lista->Append( rec_aux.verNombre(), (void*)(&lista_rec[i]) );
-	}
+	m_prod_grilla->SetCellValue( pos, 0, num_to_wx( prod.verId() ) );
+	m_prod_grilla->SetCellValue( pos, 1, str_to_wx( prod.verFecha() ) );
+	m_prod_grilla->SetCellValue( pos, 2, num_to_wx( prod.verCantidadTotalItems() ) );
+	m_prod_grilla->SetCellValue( pos, 3, num_to_wx( prod.verCostoTotal() ) );
 }
 
-/// actualizar el costo total estimado
-void WinPrincipalHija::prod_actualizarCostoTotal()
-{
-	float costo_total = 0.00f;
-	int cant_prod = m_prod_grilla->GetNumberRows();
-	
-	for (int i=0; i<cant_prod; ++i)
-	{
-		int rec_id = wxAtoi( m_prod_grilla->GetCellValue(i,0) );
-		int rec_cantidad = wxAtoi( m_prod_grilla->GetCellValue(i,2) );
-		float rec_costo = m_gestor->calcularCostoReceta(rec_id);
-		costo_total += rec_costo * rec_cantidad;
-	}
-	
-	wxString text = "$ " + num_to_wx(costo_total);
-	m_prod_text_costo->SetLabel( text );
+void WinPrincipalHija::prod_cargarFila(int fila, OrdenProduccion prod)
+{	
+	m_prod_grilla->SetCellValue( fila, 0, num_to_wx( prod.verId() ) );
+	m_prod_grilla->SetCellValue( fila, 1, str_to_wx( prod.verFecha() ) );
+	m_prod_grilla->SetCellValue( fila, 2, num_to_wx( prod.verCantidadTotalItems() ) );
+	m_prod_grilla->SetCellValue( fila, 3, num_to_wx( prod.verCostoTotal() ) );
 }
 
-// al cambiar la cantidad por celda actualiza el costo
-void WinPrincipalHija::prod_OnGrillaCambioCelda( wxGridEvent& event )  
+void WinPrincipalHija::prod_verSeleccion()
 {
-	this->prod_actualizarCostoTotal();
-}
-
-/// AGREGAR A PRODUCCION
-void WinPrincipalHija::prod_OnClickAgregar( wxCommandEvent& event )  
-{
-	int pos_sel = m_prod_lista->GetSelection();
-	if (pos_sel == wxNOT_FOUND) return;
-	
-	// obtengo el client data, casteo a puntero a Receta
-	void *rec_void = m_prod_lista->GetClientData(pos_sel);
-	const Receta *rec = static_cast<Receta*>(rec_void);
-	
-	int id_receta = rec->verId();
-	int cantidad_a_agregar = m_prod_spinctrl->GetValue();
-	bool agregar = true;
-	
-	// si el producto ya está agregado, le sumo el valor
-	int cant_prod = m_prod_grilla->GetNumberRows();
-	for (int i=0; i<cant_prod; ++i)
-	{
-		if ( wxAtoi(m_prod_grilla->GetCellValue(i, 0)) == id_receta )
-		{
-			int valor = wxAtoi(m_prod_grilla->GetCellValue(i, 2)) + cantidad_a_agregar;
-			m_prod_grilla->SetCellValue(i, 2, num_to_wx(valor));
-			agregar = false;
-			break;
-		}
-	}
-	
-	// si el producto no estaba, lo agrego
-	if (agregar)
-	{
-		int fila = m_prod_grilla->GetNumberRows();
-		m_prod_grilla->AppendRows(1);
-		m_prod_grilla->SetCellValue( fila, 0, num_to_wx(id_receta) );
-		m_prod_grilla->SetCellValue( fila, 1, str_to_wx(rec->verNombre()) );
-		m_prod_grilla->SetCellValue( fila, 2, num_to_wx(cantidad_a_agregar) );
-	}
-	
-	this->prod_actualizarCostoTotal();
-}
-
-/// ELIMINAR DE PRODUCCION
-void WinPrincipalHija::prod_OnClickQuitarSel( wxCommandEvent& event )  
-{
-	if (not m_prod_grilla->IsSelection() ) return;
+	// si no hay selección no hace nada
+	if ( not m_prod_grilla->IsSelection() ) return;
 	
 	int fila = m_prod_grilla->GetGridCursorRow();
-	m_prod_grilla->DeleteRows(fila,1);
+	int id_produccion = wxAtoi( m_prod_grilla->GetCellValue(fila, 0) );
 	
-	this->prod_actualizarCostoTotal();
+	// al pasar un id_produccion el dialog se abre en modo lectura
+	DialogHijaProducciones win(this, m_gestor, id_produccion);
+	win.ShowModal();
 }
 
-/// CONFIRMAR Y PROCESAR PRODUCCIÓN
-void WinPrincipalHija::prod_OnClickConfirmar( wxCommandEvent& event )  
+
+void WinPrincipalHija::prod_OnClickVer( wxCommandEvent& event )  
 {
-	int cant_productos = m_prod_grilla->GetNumberRows();
-	if ( cant_productos == 0 ) return;
+	this->prod_verSeleccion();
+}
+
+void WinPrincipalHija::prod_OnGrillaDobleClick( wxGridEvent& event )  
+{
+	this->prod_verSeleccion();
+}
+
+
+
+void WinPrincipalHija::prod_OnClickNuevo( wxCommandEvent& event )  
+{
+	// si no paso id se abre en modo agregar
+	DialogHijaProducciones win(this, m_gestor);
+	if (win.ShowModal() != wxID_OK) return;
 	
-	// acumulo la orden de produccion
-	std::vector< std::pair<int,int> > orden_prod;
-	for (int i=0; i<cant_productos; ++i)
-	{
-		// par <id_receta, cantidad>
-		std::pair<int,int> producto;
-		producto.first = wxAtoi( m_prod_grilla->GetCellValue(i,0) );
-		producto.second = wxAtoi( m_prod_grilla->GetCellValue(i,2) );
-		
-		orden_prod.push_back(producto);
-	}
+	// agrego a la grilla de producciones históricas
+	int fila = m_gestor->verCantidadProducciones() - 1;
+	m_prod_grilla->AppendRows(1);
+	prod_cargarFila(fila);
 	
-	// valido si hay stock suficiente 
-	std::string errores = m_gestor->validarProduccion(orden_prod);
-	if ( errores.size() > 0 )
+	// actualizo insumos
+	int cant_ins = m_gestor->verCantidadInsumos();
+	for (int i=0; i<cant_ins; ++i) ins_cargarFila(i);
+}
+
+void WinPrincipalHija::prod_OnClickVaciar( wxCommandEvent& event )  
+{
+	int cant_prod = m_gestor->verCantidadProducciones();
+	if (cant_prod == 0)
 	{
-		wxMessageBox( wxString() << "Datos incorrectos:\n" << errores,
-					 "Error al validar orden", wxICON_ERROR );
+		wxMessageBox( "No historial que vaciar", "Error", wxICON_INFORMATION );
 		return;
 	}
 	
-	// confirmacion final del usuario
-	int res = wxMessageBox( "¿Desea confirmar la orden de producción?", "Confirmar orden", wxYES_NO|wxICON_QUESTION );
-	if ( res == wxNO ) return;
+	int res = wxMessageBox( "¿Desea eliminar por completo el historial de ordenes de producción?"
+						   , "Confirmar eliminación", wxYES_NO );
 	
-	// mensaje al confirmar
-	wxMessageBox( "Stock actualizado! Buena producción :)", "Orden confirmada", wxICON_INFORMATION );
+	if ( res == wxNO) return;
 	
-	// actualizo datos y guardo archivos
-	m_gestor->ejecutarProduccion(orden_prod);
-	m_gestor->guardarInsumos();
-	m_prod_grilla->DeleteRows(0, cant_productos);
-	this->prod_actualizarCostoTotal();
-	
-	// refresco grilla de insumos
-	int cant_ins = m_gestor->verCantidadInsumos();
-	for (int i=0; i<cant_ins; ++i) 
-		this->ins_cargarFila(i);
+	m_gestor->vaciarHistorialProducciones();
+	m_prod_grilla->DeleteRows(0, cant_prod);
+	m_gestor->guardarTodo();
 }
 
-/// CANCELAR Y LIMPIAR PRODUCCIÓN
-void WinPrincipalHija::prod_OnClickCancelar( wxCommandEvent& event )  
-{
-	int cant_productos = m_prod_grilla->GetNumberRows();
-	if ( cant_productos == 0 ) return;
-	
-	int res = wxMessageBox( "¿Desea cancelar la orden de producción?", "", wxYES_NO );
-	if ( res == wxNO ) return;
-	
-	m_prod_grilla->DeleteRows(0, cant_productos);
-	
-	this->prod_actualizarCostoTotal();
-}
 
 /////////////////////// FIN PARTE DE PRODUCCION ////////////////////////
-
 
 

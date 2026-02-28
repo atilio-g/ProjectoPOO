@@ -2,44 +2,59 @@
 #define GESTORPANADERIA_H
 #include "Insumo.h"
 #include "Receta.h"
+#include "OrdenProduccion.h"
 #include <string>
 #include <vector>
 #include <map>
 
-/// clase que representa al sistema de panadería
-/// puede gestionar la totalidad de recetas y de insumos
+/**
+* Clase principal que maneja la lógica de insumos y recetas en conjunto
+*
+* Esta clase es responsable de:
+* - Gestionar la lista de insumos y recetas
+* - Generar IDs únicos
+* - Cargar y guardar datos en archivos binarios
+* - Proveer métodos de búsqueda y filtrado
+**/
 class GestorPanaderia {
 private:
 	/// nombres de archivos
+	std::string m_arch_ids;
 	std::string m_arch_insumos;
 	std::string m_arch_recetas;
-	std::string m_arch_ids;
+	std::string m_arch_producciones;
 	
 	/// vectores de datos
 	std::vector<Insumo> v_insumos;
 	std::vector<Receta> v_recetas;
+	std::vector<OrdenProduccion> v_producciones;
 	
 	/// último id usado para asegurar unicidad
 	int m_ultimoIdInsumo;
 	int m_ultimoIdReceta;
+	int m_ultimoIdProducciones;
 	
 	/// métodos privados para la gestión de ids
 	int generarIdInsumo();
 	int generarIdReceta();
+	int generarIdProduccion();
 	void guardarIds();
 	
 public:
 	/// crea el objeto gestor y carga los datos desde los archivos
-	GestorPanaderia(std::string archi_insumos, std::string archi_recetas, std::string archi_ids);
+	GestorPanaderia(std::string archi_insumos, std::string archi_recetas,
+					std::string archi_producciones, std::string archi_ids);
 	
 	/// cargar datos desde archivos
 	bool cargarInsumos();
 	bool cargarRecetas();
+	bool cargarProducciones();
 	bool cargarIds();
 	
 	/// guardar datos en archivos
 	void guardarInsumos();
 	void guardarRecetas();
+	void guardarProducciones();
 	void guardarTodo();
 	
 	/// ordenar los vectores de insumos y recetas (implementación acá por ser template)
@@ -74,7 +89,7 @@ public:
 	int verCantidadInsumos();
 	
 	/// devuelve el vector de insumos
-	const std::vector<Insumo>& verVectorInsumos();
+	const std::vector<Insumo>& verVectorInsumos() const;
 	
 	/////////////////////////////////////////////////////////////////////////////
 	/// MÉTODOS DE RECETA  
@@ -103,14 +118,14 @@ public:
 	/// devuelve el id de la receta en la posición pos del vector
 	int verIdReceta(int pos);
 	
-	/// devuelve un puntero a la receta; devuelve nullptr si no se encuentra
+	/// devuelve un puntero a la receta; nullptr si no se encuentra
 	Receta* verReceta(int id_receta);
 	
 	/// devuelve la cantidad de recetas en el vector
 	int verCantidadRecetas();
 	
 	/// devuelve el vector de recetas
-	const std::vector<Receta>& verVectorRecetas();
+	const std::vector<Receta>& verVectorRecetas() const;
 	
 	/// devuelve el costo total de producir la receta; costo=-1 como caso de error
 	float calcularCostoReceta(int id_receta);
@@ -123,18 +138,34 @@ public:
 	/// MÉTODOS DE PRODUCCIÓN
 	/////////////////////////////////////////////////////////////////////////////
 	
+	/// devuelvo la cantidad de elementos del vector v_producciones
+	int verCantidadProducciones() const;
+	
+	/// devuelve el id de la producción en la posición pos del vector
+	int verIdProduccion(int pos);
+	
+	/// devuelve un puntero a la Orden; nullptr si no lo encuentra
+	const OrdenProduccion* verProduccion(int id_produccion) const;
+	
+	/// devuelve el vector de produccion
+	const std::vector<OrdenProduccion>& verVectorProduccion() const;
+	
+	/// vacía el vector v_producciones
+	void vaciarHistorialProducciones();
+	
 	/// método auxiliar para usar en los métodos siguientes
-	// recibe un vector de pares {id_receta, cantidad_a_producir}
+	// recibe una orden de produccion
 	// devuelve un map de {id_insumo, cantidad_usada}
-	std::map<int,float> acumularInsumos(const std::vector< std::pair<int,int> > &pedido);
+	std::map<int, float> acumularInsumos(const OrdenProduccion &orden);
 	
 	/// valida si hay stock para todo. Si no hay stock, devuelve un string con los faltantes
-	std::string validarProduccion(const std::vector< std::pair<int,int> > &pedido);
+	std::string validarProduccion(const OrdenProduccion &orden);
 	
 	/// descuenta definitivamente el stock de los insumos
-	void ejecutarProduccion(const std::vector< std::pair<int,int> > &pedido);
+	void ejecutarProduccion(const OrdenProduccion &orden);
 	
-
+	/// agrega la orden al vector, como registro histórico
+	int agregarProduccion(OrdenProduccion orden);
 };
 
 

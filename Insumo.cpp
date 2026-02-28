@@ -86,10 +86,10 @@ RegistroIns Insumo::crearRegistro()
 	
 	// aseguro el tamaño del c_string
 	strncpy(aux.nombre, m_nombre.c_str(), sizeof(aux.nombre) - 1);
-	aux.nombre[sizeof(aux.nombre) - 1] = '\0';
+	aux.nombre[sizeof(aux.nombre) - 1] = '\0'; // aseguro el fin de cadena
 	
 	strncpy(aux.unidad, m_unidad.c_str(), sizeof(aux.unidad) - 1);
-	aux.unidad[sizeof(aux.unidad) - 1] = '\0';
+	aux.unidad[sizeof(aux.unidad) - 1] = '\0'; // aseguro el fin de cadena
 	return aux;
 }
 

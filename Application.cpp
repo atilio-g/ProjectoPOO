@@ -5,7 +5,7 @@
 
 IMPLEMENT_APP(Application)
 
-Application::Application() : m_gestor("insumos.dat", "recetas.dat", "config.dat")
+Application::Application() : m_gestor("insumos.dat", "recetas.dat", "producciones.dat", "config.dat")
 {
 }
 	

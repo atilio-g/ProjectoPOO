@@ -38,6 +38,18 @@ protected:
 	void rec_OnClickEliminar( wxCommandEvent& event )  override;
 	
 	/// métodos de producción
+	void prod_cargarFila( int pos );
+	void prod_cargarFila( int fila, OrdenProduccion prod );
+	void prod_verSeleccion();
+	
+	void prod_OnClickVer( wxCommandEvent& event )  override;
+	void prod_OnGrillaDobleClick( wxGridEvent& event )  override;
+	void prod_OnClickNuevo( wxCommandEvent& event )  override;
+	void prod_OnClickVaciar( wxCommandEvent& event )  override;
+	
+	
+	/* 				PARTE VIEJA
+	
 	void prod_cargarListaProductos();
 	void prod_actualizarCostoTotal();
 	
@@ -45,7 +57,7 @@ protected:
 	void prod_OnClickQuitarSel( wxCommandEvent& event )  override;
 	void prod_OnClickConfirmar( wxCommandEvent& event )  override;
 	void prod_OnClickCancelar( wxCommandEvent& event )  override;
-	void prod_OnGrillaCambioCelda( wxGridEvent& event )  override;
+	void prod_OnGrillaCambioCelda( wxGridEvent& event )  override; */
 	
 public:
 	WinPrincipalHija(wxWindow *parent=NULL, GestorPanaderia *gestor=nullptr);

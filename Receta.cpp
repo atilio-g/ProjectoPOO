@@ -103,13 +103,13 @@ RegistroReceta Receta::crearRegistro()
 	
 	// aseguro el tamaño del c_string
 	strncpy(aux.nombre, m_nombre.c_str(), sizeof(aux.nombre) - 1);
-	aux.nombre[sizeof(aux.nombre) - 1] = '\0';
+	aux.nombre[sizeof(aux.nombre) - 1] = '\0'; // aseguro el fin de cadena
 	
 	return aux;
 }
 
 /// OPERADORES
-Ingrediente Receta::operator[] (size_t i) 
+Ingrediente Receta::operator[] (size_t i) const
 {
 	if ( i >= m_ingredientes.size() )
 	{

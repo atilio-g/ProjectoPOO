@@ -8,17 +8,10 @@
 class DialogHijaRecetas : public DialogBaseRecetas {
 	
 private:
-	/// gestor único
-	GestorPanaderia *m_gestor;
-	
-	/// puntero a receta en caso de editar
-	Receta *m_rec;
-	
-	/// true si el usuario entra a editar una receta; false si el usuario agregar una receta
-	bool m_modo_editar;
-	
-	/// false por defecto; true si el usuario cambia un dato
-	bool m_cambios;
+	GestorPanaderia *m_gestor; 	// gestor único
+	Receta *m_rec; 	// puntero a receta en caso de editar
+	bool m_modo_editar; // true para editar; false para agregar
+	bool m_cambios; // false por defecto; true si el usuario cambia un dato
 	
 protected:
 	

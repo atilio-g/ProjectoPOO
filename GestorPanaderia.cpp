@@ -9,15 +9,20 @@
 #include <map>
 
 /// CONSTRUCTOR
-GestorPanaderia::GestorPanaderia(std::string archi_insumos, std::string archi_recetas, std::string archi_ids) :
+GestorPanaderia::GestorPanaderia(std::string archi_insumos,
+		std::string archi_recetas, std::string archi_producciones, std::string archi_ids) :
+	
 	m_arch_insumos(archi_insumos),
 	m_arch_recetas(archi_recetas),
+	m_arch_producciones(archi_producciones),
 	m_arch_ids(archi_ids),
 	m_ultimoIdInsumo(0),
-	m_ultimoIdReceta(0)
+	m_ultimoIdReceta(0),
+	m_ultimoIdProducciones(0)
 {
 	cargarInsumos();
 	cargarRecetas();
+	cargarProducciones();
 	cargarIds();
 }
 
@@ -52,8 +57,7 @@ void GestorPanaderia::guardarRecetas()
 		archi.write(reinterpret_cast<char*>(&aux_rec), sizeof(aux_rec));
 		
 		// luego guardo los n ingredientes
-		int j, cant_ing = v_recetas[i].verCantidadIngredientes();
-		for (j=0; j<cant_ing; ++j)
+		for (int j=0; j<aux_rec.cantidad; ++j)
 		{
 			Ingrediente aux_ing = v_recetas[i][j];
 			archi.write(reinterpret_cast<char*>(&aux_ing), sizeof(aux_ing));
@@ -61,19 +65,40 @@ void GestorPanaderia::guardarRecetas()
 	}
 }
 
+void GestorPanaderia::guardarProducciones()
+{
+	std::ofstream archi(m_arch_producciones, std::ios::binary);
+	
+	size_t i, cant = v_producciones.size();
+	for (i=0; i<cant; ++i)
+	{
+		// guardo el registro produccion que contiene cuantos items le siguen
+		RegistroProduccion aux_prod = v_producciones[i].crearRegistro();
+		archi.write(reinterpret_cast<char*>(&aux_prod), sizeof(aux_prod));
+		
+		for (int j=0; j<aux_prod.cant_items; ++j)
+		{
+			ItemOrden aux_item = v_producciones[i][j];
+			archi.write(reinterpret_cast<char*>(&aux_item), sizeof(aux_item));
+		}
+	}
+}
+
 void GestorPanaderia::guardarIds()
 {
-	std::ofstream archi(m_arch_ids,std::ios::binary);
+	std::ofstream archi(m_arch_ids, std::ios::binary);
 	
-	// primero el id de insumos y después el id de recetas
+	// (1) id_insumos, (2) id_recetas, (3) id_producciones
 	archi.write(reinterpret_cast<char*>(&m_ultimoIdInsumo), sizeof(m_ultimoIdInsumo));
 	archi.write(reinterpret_cast<char*>(&m_ultimoIdReceta), sizeof(m_ultimoIdReceta));
+	archi.write(reinterpret_cast<char*>(&m_ultimoIdProducciones), sizeof(m_ultimoIdProducciones));
 }
 
 void GestorPanaderia::guardarTodo()
 {
 	this->guardarInsumos();
 	this->guardarRecetas();
+	this->guardarProducciones();
 	this->guardarIds();
 }
 
@@ -95,11 +120,11 @@ bool GestorPanaderia::cargarInsumos()
 	RegistroIns aux;
 	while ( archi.read(reinterpret_cast<char*>(&aux), sizeof(aux)) )
 	{
-		// paso de c_string a string
-		std::string nombre = aux.nombre, unidad = aux.unidad;
-		Insumo ins(nombre, unidad, aux.tipo, aux.costo, aux.stock);
+		// reconstruyo el insumo
+		Insumo ins(aux.nombre, aux.unidad, aux.tipo, aux.costo, aux.stock);
 		ins.establecerId(aux.id);
 		
+		// lo agrego al vector general
 		v_insumos.push_back(ins);
 	}
 	return true;
@@ -110,27 +135,15 @@ bool GestorPanaderia::cargarRecetas()
 	std::ifstream archi(m_arch_recetas, std::ios::binary|std::ios::in);
 	if (not archi.is_open()) return false;
 	
-	// si el archivo está vacío, que no cargue nada
-	/* 
-	archi.seekg(0, std::ios::end);
-	int tam = archi.tellg();
-	if ( tam == 0 ) return true;
-	
-	auto final_pos = archi.tellg();
-	archi.seekg(0);
-	while ( archi.tellg() < final_pos )
-	*/
-	
-	// primero leo el registro de receta i
+	// mientras haya un RegistroReceta para leer
 	RegistroReceta regi;
 	while( archi.read(reinterpret_cast<char*>(&regi), sizeof(regi)) )
 	{
-		// paso de c_string a string
-		std::string nombre = regi.nombre; 
-		Receta rec(nombre);
+		// reconstruyo la Receta
+		Receta rec(regi.nombre);
 		rec.establecerId(regi.id);
 		
-		// luego leo los n ingredientes de la receta i
+		// leo los n ingredientes de la receta i
 		for (int i=0; i<regi.cantidad; ++i)
 		{
 			Ingrediente ing;
@@ -138,7 +151,41 @@ bool GestorPanaderia::cargarRecetas()
 			
 			rec.modificarIngrediente(ing.id, ing.cantidad);
 		}
+		
+		// agrego receta al vector general
 		v_recetas.push_back(rec);
+	}
+	return true;
+}
+
+bool GestorPanaderia::cargarProducciones()
+{
+	std::ifstream archi(m_arch_producciones, std::ios::binary|std::ios::in);
+	if (not archi.is_open()) return false;
+	
+	// mientras haya un RegistroProduccion para leer
+	RegistroProduccion regi;
+	while( archi.read(reinterpret_cast<char*>(&regi), sizeof(regi)) )
+	{
+		// reconstruyo la Orden produccion
+		OrdenProduccion orden(regi.fecha);
+		orden.establecerId(regi.id);
+		
+		// leo los n items de la orden i
+		for (int i=0; i<regi.cant_items; ++i)
+		{
+			// pensar que cada item representa una receta
+			ItemOrden item;
+			archi.read(reinterpret_cast<char*>(&item), sizeof(item));
+			
+			orden.agregarItem(item.id_receta, item.nombre_receta, item.cantidad, 0);
+		}
+		
+		// establezco el costo histórico
+		orden.establecerCostoTotal(regi.costo_total);
+		
+		// agrego la orden terminada al vector general
+		v_producciones.push_back(orden);
 	}
 	return true;
 }
@@ -147,20 +194,17 @@ bool GestorPanaderia::cargarIds()
 {
 	std::ifstream archi(m_arch_ids, std::ios::binary);
 	if (not archi.is_open()) return false;
-	
-	// si el archivo está vacío, que no cargue nada
-	/*archi.seekg(0, std::ios::end);
-	int tam = archi.tellg();
-	if ( tam == 0 ) return true; */
 
 	archi.read(reinterpret_cast<char*>(&m_ultimoIdInsumo), sizeof(m_ultimoIdInsumo));
 	archi.read(reinterpret_cast<char*>(&m_ultimoIdReceta), sizeof(m_ultimoIdReceta));
+	archi.read(reinterpret_cast<char*>(&m_ultimoIdProducciones), sizeof(m_ultimoIdProducciones));
 	return true;
 }
 
 /// generar ids
 int GestorPanaderia::generarIdInsumo() { return ++m_ultimoIdInsumo; }
 int GestorPanaderia::generarIdReceta() { return ++m_ultimoIdReceta; }
+int GestorPanaderia::generarIdProduccion() { return ++m_ultimoIdProducciones; }
 
 /////////////////////////////////////////////////////////////////////////////
 /// MÉTODOS DE INSUMO
@@ -260,7 +304,7 @@ Insumo* GestorPanaderia::verInsumo(int id_insumo)
 int GestorPanaderia::verCantidadInsumos() { return v_insumos.size(); }
 
 /// ver vector de insumos
-const std::vector<Insumo>& GestorPanaderia::verVectorInsumos() { return v_insumos; }
+const std::vector<Insumo>& GestorPanaderia::verVectorInsumos() const { return v_insumos; }
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -380,7 +424,7 @@ Receta* GestorPanaderia::verReceta(int id_receta)
 int GestorPanaderia::verCantidadRecetas() { return v_recetas.size(); }
 
 /// ver vector de recetas
-const std::vector<Receta>& GestorPanaderia::verVectorRecetas() { return v_recetas; }
+const std::vector<Receta>& GestorPanaderia::verVectorRecetas() const { return v_recetas; }
 
 /// calcular costo de producir la receta por id
 float GestorPanaderia::calcularCostoReceta(int id_receta)
@@ -453,40 +497,64 @@ void GestorPanaderia::ordenarRecetaCosto()
 /// MÉTODOS DE PRODUCCION
 /////////////////////////////////////////////////////////////////////////////
 
-// recibe vector de pares {id_receta, cantidad_a_producir}
-std::map<int,float> GestorPanaderia::acumularInsumos(const std::vector< std::pair<int,int> > &pedido)
+/// 
+int GestorPanaderia::verCantidadProducciones() const { return v_producciones.size(); }
+
+/// 
+int GestorPanaderia::verIdProduccion(int pos) { return v_producciones[pos].verId(); }
+
+/// 
+const OrdenProduccion* GestorPanaderia::verProduccion(int id_produccion) const
+{
+	size_t i, cant = v_producciones.size();
+	for (i=0; i<cant; ++i)
+	{
+		if (v_producciones[i].verId() == id_produccion) 
+			return &(v_producciones[i]);
+	}
+	return nullptr;
+}
+
+///
+const std::vector<OrdenProduccion>& GestorPanaderia::verVectorProduccion() const { return v_producciones; }
+
+/// 
+void GestorPanaderia::vaciarHistorialProducciones() { v_producciones.clear(); }
+
+///
+std::map<int,float> GestorPanaderia::acumularInsumos(const OrdenProduccion &orden)
 {
 	// utilizo map por facilidad de búsqueda y acumulación ante ids repetidos
 	// formato <id_receta, cant_a_producir>
 	std::map<int, float> insumos_necesarios;
+	int cant_items = orden.verCantidadPorTipoItems();
 	
 	// acumulo insumos_necesarios
-	for (const auto &item : pedido)
+	for (int i=0; i<cant_items; ++i)
 	{
-		int id_receta = item.first;
-		int cant_a_producir = item.second;
+		ItemOrden item = orden[i];
 		
-		Receta *rec = this->verReceta(id_receta);
+		Receta *rec = this->verReceta(item.id_receta);
 		if (rec == nullptr ) continue;
 		
 		// recorro los ingredientes de la receta
 		int cantidad_ingredientes = rec->verCantidadIngredientes();
-		for (int i=0; i<cantidad_ingredientes; ++i)
+		for (int j=0; j<cantidad_ingredientes; ++j)
 		{
-			Ingrediente ing = (*rec)[i];
+			Ingrediente ing = (*rec)[j];
 			
 			// cantidad que lleva la receta x la cantidad a producir de la receta
-			insumos_necesarios[ing.id] += ing.cantidad * cant_a_producir;
+			insumos_necesarios[ing.id] += ing.cantidad * item.cantidad;
 		}
 	}
 	return insumos_necesarios;
 }
 
 
-std::string GestorPanaderia::validarProduccion(const std::vector< std::pair<int,int> > &pedido)
+std::string GestorPanaderia::validarProduccion(const OrdenProduccion &orden)
 {
 	// formato <id_receta, cant_a_producir>
-	std::map<int, float> insumos_necesarios = acumularInsumos(pedido);
+	std::map<int, float> insumos_necesarios = acumularInsumos(orden);
 	
 	// chequeo si alcanza el stock de cada insumo, con que uno no alcance ya se cancela
 	std::string errores;
@@ -515,10 +583,10 @@ std::string GestorPanaderia::validarProduccion(const std::vector< std::pair<int,
 	return errores;
 }
 
-void GestorPanaderia::ejecutarProduccion(const std::vector< std::pair<int,int> > &pedido)
+void GestorPanaderia::ejecutarProduccion(const OrdenProduccion &orden)
 {
 	// formato <id_receta, cant_a_producir>
-	std::map<int, float> insumos_necesarios = acumularInsumos(pedido);
+	std::map<int, float> insumos_necesarios = acumularInsumos(orden);
 	
 	// resto el stock de cada insumo
 	for (const auto &par_ins : insumos_necesarios)
@@ -535,5 +603,12 @@ void GestorPanaderia::ejecutarProduccion(const std::vector< std::pair<int,int> >
 	}
 }
 
-
+int GestorPanaderia::agregarProduccion(OrdenProduccion orden)
+{
+	int nuevo_id = this->generarIdProduccion();
+	orden.establecerId(nuevo_id);
+	v_producciones.push_back(orden);
+	
+	return nuevo_id;
+}
 
