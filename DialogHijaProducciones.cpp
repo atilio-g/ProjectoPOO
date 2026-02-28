@@ -29,8 +29,9 @@ DialogHijaProducciones::DialogHijaProducciones(wxWindow *parent,
 		m_btn_agregar->Hide();
 		m_btn_quitar->Hide();
 		m_btn_cancelar->Hide(); 
-		m_btn_confirmar->SetLabel("Cerrar"); // reutilizo el confirmar para salir
 		m_date_fecha->Disable(); // la fecha no se cambia
+		
+		m_btn_confirmar->SetLabel("Cerrar"); // reutilizo el confirmar para salir
 		
 		// datos históricos
 		const OrdenProduccion* orden = m_gestor->verProduccion(id_orden);
@@ -58,6 +59,11 @@ DialogHijaProducciones::DialogHijaProducciones(wxWindow *parent,
 		this->SetTitle("Registrar nueva producción");
 		m_date_fecha->SetValue(wxDateTime::Today());
 		
+		m_prod_grilla->EnableEditing(true);
+		wxGridCellAttr* attrSoloLectura = new wxGridCellAttr;
+		attrSoloLectura->SetReadOnly();
+		m_prod_grilla->SetColAttr(1, attrSoloLectura);
+		
 		// cargo el combo box con las recetas disponibles
 		const std::vector<Receta> &lista_rec = m_gestor->verVectorRecetas();
 		int cant_recetas = m_gestor->verCantidadRecetas();
@@ -72,6 +78,19 @@ DialogHijaProducciones::DialogHijaProducciones(wxWindow *parent,
 			m_lista_recetas->Append( rec_aux.verNombre(), (void*)(&lista_rec[i]) );
 		}
 	}
+	
+	// colores a grilla
+	m_prod_grilla->SetLabelBackgroundColour(wxColour(119, 158, 203));
+	m_prod_grilla->SetLabelTextColour(*wxWHITE);
+	m_prod_grilla->SetDefaultRowSize(26, true);
+	m_prod_grilla->SetGridLineColour(wxColour(210, 215, 220));
+	
+	// fuente destacada para el costo
+	wxFont fuente_total = m_text_costo->GetFont();
+	fuente_total.SetPointSize(11); // Letra más grande
+	fuente_total.MakeBold();       // Negrita
+	m_text_costo->SetFont(fuente_total);
+	
 	ActualizarGrilla();	
 }
 

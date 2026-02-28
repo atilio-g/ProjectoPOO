@@ -56,11 +56,11 @@ WinPrincipalBase::WinPrincipalBase( wxWindow* parent, wxWindowID id, const wxStr
 
 	// Columns
 	m_insumos_grilla->SetColSize( 0, 0 );
-	m_insumos_grilla->SetColSize( 1, 70 );
-	m_insumos_grilla->SetColSize( 2, 200 );
-	m_insumos_grilla->SetColSize( 3, 80 );
-	m_insumos_grilla->SetColSize( 4, 35 );
-	m_insumos_grilla->SetColSize( 5, 80 );
+	m_insumos_grilla->SetColSize( 1, 110 );
+	m_insumos_grilla->SetColSize( 2, 250 );
+	m_insumos_grilla->SetColSize( 3, 125 );
+	m_insumos_grilla->SetColSize( 4, 55 );
+	m_insumos_grilla->SetColSize( 5, 150 );
 	m_insumos_grilla->EnableDragColMove( true );
 	m_insumos_grilla->EnableDragColSize( true );
 	m_insumos_grilla->SetColLabelValue( 0, wxT("ID") );
@@ -81,13 +81,13 @@ WinPrincipalBase::WinPrincipalBase( wxWindow* parent, wxWindowID id, const wxStr
 
 	// Cell Defaults
 	m_insumos_grilla->SetDefaultCellAlignment( wxALIGN_LEFT, wxALIGN_CENTER );
-	bSizer4->Add( m_insumos_grilla, 1, wxALL|wxALIGN_CENTER_HORIZONTAL, 5 );
+	bSizer4->Add( m_insumos_grilla, 1, wxALL|wxEXPAND, 5 );
 
 
 	m_insumos_panel->SetSizer( bSizer4 );
 	m_insumos_panel->Layout();
 	bSizer4->Fit( m_insumos_panel );
-	m_insumos_notebook->AddPage( m_insumos_panel, wxT("Insumos"), false );
+	m_insumos_notebook->AddPage( m_insumos_panel, wxT("Insumos"), true );
 	m_recetas_panel = new wxPanel( m_insumos_notebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	wxBoxSizer* bSizer41;
 	bSizer41 = new wxBoxSizer( wxVERTICAL );
@@ -125,9 +125,9 @@ WinPrincipalBase::WinPrincipalBase( wxWindow* parent, wxWindowID id, const wxStr
 
 	// Columns
 	m_recetas_grilla->SetColSize( 0, 0 );
-	m_recetas_grilla->SetColSize( 1, 225 );
-	m_recetas_grilla->SetColSize( 2, 100 );
-	m_recetas_grilla->SetColSize( 3, 140 );
+	m_recetas_grilla->SetColSize( 1, 350 );
+	m_recetas_grilla->SetColSize( 2, 130 );
+	m_recetas_grilla->SetColSize( 3, 210 );
 	m_recetas_grilla->EnableDragColMove( true );
 	m_recetas_grilla->EnableDragColSize( true );
 	m_recetas_grilla->SetColLabelValue( 0, wxT("ID") );
@@ -145,13 +145,13 @@ WinPrincipalBase::WinPrincipalBase( wxWindow* parent, wxWindowID id, const wxStr
 
 	// Cell Defaults
 	m_recetas_grilla->SetDefaultCellAlignment( wxALIGN_LEFT, wxALIGN_CENTER );
-	bSizer41->Add( m_recetas_grilla, 1, wxALL|wxALIGN_CENTER_HORIZONTAL, 5 );
+	bSizer41->Add( m_recetas_grilla, 1, wxALL|wxEXPAND, 5 );
 
 
 	m_recetas_panel->SetSizer( bSizer41 );
 	m_recetas_panel->Layout();
 	bSizer41->Fit( m_recetas_panel );
-	m_insumos_notebook->AddPage( m_recetas_panel, wxT("Recetas"), true );
+	m_insumos_notebook->AddPage( m_recetas_panel, wxT("Recetas"), false );
 	m_produccion_panel = new wxPanel( m_insumos_notebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	wxBoxSizer* bSizer411;
 	bSizer411 = new wxBoxSizer( wxVERTICAL );
@@ -167,10 +167,10 @@ WinPrincipalBase::WinPrincipalBase( wxWindow* parent, wxWindowID id, const wxStr
 
 	// Columns
 	m_prod_grilla->SetColSize( 0, 0 );
-	m_prod_grilla->SetColSize( 1, 146 );
-	m_prod_grilla->SetColSize( 2, 179 );
-	m_prod_grilla->SetColSize( 3, 140 );
-	m_prod_grilla->EnableDragColMove( true );
+	m_prod_grilla->SetColSize( 1, 225 );
+	m_prod_grilla->SetColSize( 2, 180 );
+	m_prod_grilla->SetColSize( 3, 275 );
+	m_prod_grilla->EnableDragColMove( false );
 	m_prod_grilla->EnableDragColSize( true );
 	m_prod_grilla->SetColLabelValue( 0, wxT("ID") );
 	m_prod_grilla->SetColLabelValue( 1, wxT("Fecha") );
@@ -446,9 +446,9 @@ DialogBaseRecetas::DialogBaseRecetas( wxWindow* parent, wxWindowID id, const wxS
 
 	// Columns
 	m_recetaEditar_grilla->SetColSize( 0, 0 );
-	m_recetaEditar_grilla->SetColSize( 1, 160 );
-	m_recetaEditar_grilla->SetColSize( 2, 85 );
-	m_recetaEditar_grilla->SetColSize( 3, 35 );
+	m_recetaEditar_grilla->SetColSize( 1, 181 );
+	m_recetaEditar_grilla->SetColSize( 2, 108 );
+	m_recetaEditar_grilla->SetColSize( 3, 45 );
 	m_recetaEditar_grilla->EnableDragColMove( false );
 	m_recetaEditar_grilla->EnableDragColSize( true );
 	m_recetaEditar_grilla->SetColLabelValue( 0, wxT("Id") );
@@ -529,19 +529,6 @@ DialogProducciones::DialogProducciones( wxWindow* parent, wxWindowID id, const w
 	wxBoxSizer* bSizer19;
 	bSizer19 = new wxBoxSizer( wxVERTICAL );
 
-	wxBoxSizer* bSizer24;
-	bSizer24 = new wxBoxSizer( wxHORIZONTAL );
-
-	m_staticText151 = new wxStaticText( this, wxID_ANY, wxT("Fecha de producción"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_staticText151->Wrap( -1 );
-	bSizer24->Add( m_staticText151, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
-
-	m_date_fecha = new wxDatePickerCtrl( this, wxID_ANY, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, wxDP_DROPDOWN );
-	bSizer24->Add( m_date_fecha, 0, wxALL, 5 );
-
-
-	bSizer19->Add( bSizer24, 0, wxEXPAND, 5 );
-
 	wxBoxSizer* bSizer201;
 	bSizer201 = new wxBoxSizer( wxHORIZONTAL );
 
@@ -580,15 +567,15 @@ DialogProducciones::DialogProducciones( wxWindow* parent, wxWindowID id, const w
 
 	// Grid
 	m_prod_grilla->CreateGrid( 0, 3 );
-	m_prod_grilla->EnableEditing( true );
+	m_prod_grilla->EnableEditing( false );
 	m_prod_grilla->EnableGridLines( true );
 	m_prod_grilla->EnableDragGridSize( false );
 	m_prod_grilla->SetMargins( 0, 0 );
 
 	// Columns
 	m_prod_grilla->SetColSize( 0, 0 );
-	m_prod_grilla->SetColSize( 1, 200 );
-	m_prod_grilla->SetColSize( 2, 75 );
+	m_prod_grilla->SetColSize( 1, 240 );
+	m_prod_grilla->SetColSize( 2, 264 );
 	m_prod_grilla->EnableDragColMove( false );
 	m_prod_grilla->EnableDragColSize( true );
 	m_prod_grilla->SetColLabelValue( 0, wxT("ID") );
@@ -605,7 +592,7 @@ DialogProducciones::DialogProducciones( wxWindow* parent, wxWindowID id, const w
 
 	// Cell Defaults
 	m_prod_grilla->SetDefaultCellAlignment( wxALIGN_LEFT, wxALIGN_TOP );
-	bSizer19->Add( m_prod_grilla, 1, wxALL|wxALIGN_CENTER_HORIZONTAL, 5 );
+	bSizer19->Add( m_prod_grilla, 1, wxALL|wxEXPAND, 5 );
 
 	m_btn_quitar = new wxButton( this, wxID_ANY, wxT("Quitar seleccionado"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer19->Add( m_btn_quitar, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5 );
@@ -616,7 +603,17 @@ DialogProducciones::DialogProducciones( wxWindow* parent, wxWindowID id, const w
 	wxBoxSizer* bSizer23;
 	bSizer23 = new wxBoxSizer( wxHORIZONTAL );
 
-	m_staticText15 = new wxStaticText( this, wxID_ANY, wxT("Costo estimado:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText151 = new wxStaticText( this, wxID_ANY, wxT("Fecha:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText151->Wrap( -1 );
+	bSizer23->Add( m_staticText151, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+	m_date_fecha = new wxDatePickerCtrl( this, wxID_ANY, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, wxDP_DROPDOWN );
+	bSizer23->Add( m_date_fecha, 0, wxALL, 5 );
+
+
+	bSizer23->Add( 0, 0, 1, wxEXPAND, 5 );
+
+	m_staticText15 = new wxStaticText( this, wxID_ANY, wxT("Costo:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText15->Wrap( -1 );
 	bSizer23->Add( m_staticText15, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
 
@@ -625,7 +622,7 @@ DialogProducciones::DialogProducciones( wxWindow* parent, wxWindowID id, const w
 	bSizer23->Add( m_text_costo, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
 
 
-	bSizer23->Add( 1, 0, 1, wxEXPAND, 5 );
+	bSizer23->Add( 0, 0, 1, wxEXPAND, 5 );
 
 	m_btn_confirmar = new wxButton( this, wxID_ANY, wxT("Confirmar"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer23->Add( m_btn_confirmar, 0, wxALL, 5 );

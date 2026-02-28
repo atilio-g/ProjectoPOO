@@ -30,9 +30,9 @@
 #include <wx/textctrl.h>
 #include <wx/dialog.h>
 #include <wx/listbox.h>
+#include <wx/spinctrl.h>
 #include <wx/datectrl.h>
 #include <wx/dateevt.h>
-#include <wx/spinctrl.h>
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -84,7 +84,7 @@ class WinPrincipalBase : public wxFrame
 
 	public:
 
-		WinPrincipalBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("Aplicación para panadería"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 633,452 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
+		WinPrincipalBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("Aplicación para panadería"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 735,500 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
 
 		~WinPrincipalBase();
 
@@ -120,7 +120,7 @@ class DialogBaseInsumo : public wxDialog
 
 	public:
 
-		DialogBaseInsumo( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 389,196 ), long style = wxDEFAULT_DIALOG_STYLE );
+		DialogBaseInsumo( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 389,198 ), long style = wxDEFAULT_DIALOG_STYLE );
 
 		~DialogBaseInsumo();
 
@@ -163,7 +163,7 @@ class DialogBaseRecetas : public wxDialog
 
 	public:
 
-		DialogBaseRecetas( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("Detalles de receta"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 547,370 ), long style = wxDEFAULT_DIALOG_STYLE );
+		DialogBaseRecetas( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("Detalles de receta"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 590,380 ), long style = wxDEFAULT_DIALOG_STYLE );
 
 		~DialogBaseRecetas();
 
@@ -177,8 +177,6 @@ class DialogProducciones : public wxDialog
 	private:
 
 	protected:
-		wxStaticText* m_staticText151;
-		wxDatePickerCtrl* m_date_fecha;
 		wxStaticText* m_statictext_prod;
 		wxChoice* m_lista_recetas;
 		wxStaticText* m_statictext_uni;
@@ -188,6 +186,8 @@ class DialogProducciones : public wxDialog
 		wxGrid* m_prod_grilla;
 		wxButton* m_btn_quitar;
 		wxStaticLine* m_staticline7;
+		wxStaticText* m_staticText151;
+		wxDatePickerCtrl* m_date_fecha;
 		wxStaticText* m_staticText15;
 		wxStaticText* m_text_costo;
 		wxButton* m_btn_confirmar;
@@ -204,7 +204,7 @@ class DialogProducciones : public wxDialog
 
 	public:
 
-		DialogProducciones( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("Registrar nueva producción"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 547,370 ), long style = wxDEFAULT_DIALOG_STYLE );
+		DialogProducciones( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("Registrar nueva producción"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 553,370 ), long style = wxDEFAULT_DIALOG_STYLE );
 
 		~DialogProducciones();
 

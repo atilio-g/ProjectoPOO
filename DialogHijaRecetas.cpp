@@ -12,7 +12,7 @@
 DialogHijaRecetas::DialogHijaRecetas(wxWindow *parent, GestorPanaderia *gestor, Receta *rec) : 
 	DialogBaseRecetas(parent), m_gestor(gestor), m_rec(rec), m_cambios(false)
 {
-	m_rec == nullptr ? m_modo_editar = false : m_modo_editar = true;
+	m_modo_editar = (m_rec != nullptr);
 	
 	// precargo datos si el usuario entra en modo editar
 	if (m_modo_editar)
@@ -60,6 +60,12 @@ DialogHijaRecetas::DialogHijaRecetas(wxWindow *parent, GestorPanaderia *gestor, 
 	attrUnidad->SetReadOnly();
 	attrUnidad->SetAlignment(wxALIGN_CENTER, wxALIGN_CENTER);
 	m_recetaEditar_grilla->SetColAttr(3, attrUnidad);
+	
+	// colores a grilla
+	m_recetaEditar_grilla->SetLabelBackgroundColour(wxColour(119, 158, 203));
+	m_recetaEditar_grilla->SetLabelTextColour(*wxWHITE);
+	m_recetaEditar_grilla->SetDefaultRowSize(26, true);
+	m_recetaEditar_grilla->SetGridLineColour(wxColour(210, 215, 220));
 	
 	this->RefrescarListaInsumos();
 }

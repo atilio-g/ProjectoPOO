@@ -1,8 +1,7 @@
 #include "wxfb_project.h"
 #include "WinPrincipalHija.h"
 #include "ConversionDatos.h"
-#include "DialogHijaInsumoAgregar.h"
-#include "DialogHijaInsumoEditar.h"
+#include "DialogHijaInsumo.h"
 #include "DialogHijaRecetas.h"
 #include "DialogHijaProducciones.h"
 #include "Insumo.h"
@@ -73,6 +72,25 @@ WinPrincipalHija::WinPrincipalHija(wxWindow *parent, GestorPanaderia *gestor) :
 	// configuro columnas
 	m_prod_grilla->SetColFormatNumber(2);
 	m_prod_grilla->SetColFormatFloat(3, -1, 2);
+	
+	// colores a grillas
+	wxColour colorHeader(119, 158, 203);
+	wxColour colorHeaderTexto(*wxWHITE);
+	
+	m_insumos_grilla->SetLabelBackgroundColour(colorHeader);
+	m_insumos_grilla->SetLabelTextColour(colorHeaderTexto);
+	m_insumos_grilla->SetDefaultRowSize(26, true);  // filas un poco más altas
+	m_insumos_grilla->SetGridLineColour(wxColour(210, 215, 220)); // líneas más suaves
+	
+	m_recetas_grilla->SetLabelBackgroundColour(colorHeader);
+	m_recetas_grilla->SetLabelTextColour(colorHeaderTexto);
+	m_recetas_grilla->SetDefaultRowSize(26, true);
+	m_recetas_grilla->SetGridLineColour(wxColour(210, 215, 220));
+	
+	m_prod_grilla->SetLabelBackgroundColour(colorHeader);
+	m_prod_grilla->SetLabelTextColour(colorHeaderTexto);
+	m_prod_grilla->SetDefaultRowSize(26, true);
+	m_prod_grilla->SetGridLineColour(wxColour(210, 215, 220));
 }
 
 WinPrincipalHija::~WinPrincipalHija() {
@@ -152,7 +170,7 @@ void WinPrincipalHija::ins_OnGrillaLabelClick( wxGridEvent& event )
 void WinPrincipalHija::ins_OnClickNuevo( wxCommandEvent& event ) 
 {
 	// abre la nueva ventana para ingresar los datos
-	DialogHijaInsumoAgregar nuevo_dialog(this, m_gestor);
+	DialogHijaInsumo nuevo_dialog(this, m_gestor);
 	
 	if ( nuevo_dialog.ShowModal() == 1 )
 	{
@@ -171,7 +189,7 @@ void WinPrincipalHija::ins_editarSeleccion()
 	Insumo *ins = m_gestor->verInsumo(id);
 	
 	// abre la nueva ventana para ingresar los datos
-	DialogHijaInsumoEditar nuevo_dialog(this, m_gestor, ins);
+	DialogHijaInsumo nuevo_dialog(this, m_gestor, ins);
 	
 	if ( nuevo_dialog.ShowModal() == 1 )
 	{
