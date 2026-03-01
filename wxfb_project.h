@@ -77,6 +77,7 @@ class WinPrincipalBase : public wxFrame
 		virtual void rec_OnGrillaDobleClick( wxGridEvent& event ) { event.Skip(); }
 		virtual void rec_OnGrillaLabelClick( wxGridEvent& event ) { event.Skip(); }
 		virtual void prod_OnGrillaDobleClick( wxGridEvent& event ) { event.Skip(); }
+		virtual void prod_OnGrillaLabelClick( wxGridEvent& event ) { event.Skip(); }
 		virtual void prod_OnClickNuevo( wxCommandEvent& event ) { event.Skip(); }
 		virtual void prod_OnClickVer( wxCommandEvent& event ) { event.Skip(); }
 		virtual void prod_OnClickVaciar( wxCommandEvent& event ) { event.Skip(); }
@@ -188,7 +189,7 @@ class DialogProducciones : public wxDialog
 		wxStaticLine* m_staticline7;
 		wxStaticText* m_staticText151;
 		wxDatePickerCtrl* m_date_fecha;
-		wxStaticText* m_staticText15;
+		wxStaticText* m_statictext_costo;
 		wxStaticText* m_text_costo;
 		wxButton* m_btn_confirmar;
 		wxButton* m_btn_cancelar;

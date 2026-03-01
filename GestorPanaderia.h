@@ -57,12 +57,15 @@ public:
 	void guardarProducciones();
 	void guardarTodo();
 	
-	/// ordenar los vectores de insumos y recetas (implementación acá por ser template)
+	/// ordenar los vectores (implementación acá por ser template)
 	template<typename Pfnc>
 	void ordenarInsumos(Pfnc comparador){ sort(v_insumos.begin(), v_insumos.end(), comparador); }
 	
 	template<typename Pfnc>
 	void ordenarRecetas(Pfnc comparador) { sort(v_recetas.begin(), v_recetas.end(), comparador); }
+	
+	template<typename Pfnc>
+	void ordenarProducciones(Pfnc comparador) { sort(v_producciones.begin(), v_producciones.end(), comparador); }
 	
 	/////////////////////////////////////////////////////////////////////////////
 	/// MÉTODOS DE INSUMO 

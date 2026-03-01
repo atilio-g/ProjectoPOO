@@ -2,14 +2,14 @@
 #include <cstring>
 
 /// CONSTRUCTOR
-OrdenProduccion::OrdenProduccion(std::string fecha) : 
+OrdenProduccion::OrdenProduccion(int fecha) : 
 	m_id(0), m_fecha(fecha), m_costo_total(0.0f) 
 {
 }
 
 /// FUNCIONES VER
 int OrdenProduccion::verId() const { return m_id; }
-std::string OrdenProduccion::verFecha() const { return m_fecha; }
+int OrdenProduccion::verFecha() const { return m_fecha; }
 float OrdenProduccion::verCostoTotal() const { return m_costo_total; }
 ItemOrden OrdenProduccion::operator[](size_t i) const { return m_items[i]; }
 
@@ -29,7 +29,7 @@ int OrdenProduccion::verCantidadTotalItems() const
 /// FUNCIONES QUE MODIFICAN DATOS
 void OrdenProduccion::establecerId(int id) { m_id = id; }
 void OrdenProduccion::establecerCostoTotal(float costo_historico) { m_costo_total = costo_historico; }
-void OrdenProduccion::establecerFecha(std::string fecha) { m_fecha = fecha; }
+void OrdenProduccion::establecerFecha(int fecha) { m_fecha = fecha; }
 
 void OrdenProduccion::agregarItem(int id_receta, std::string nombre_receta, int cantidad, float costo_unitario) 
 {
@@ -51,13 +51,30 @@ RegistroProduccion OrdenProduccion::crearRegistro() const
 {
 	RegistroProduccion aux;
 	aux.id = m_id;
+	aux.fecha = m_fecha;
 	aux.cant_items = m_items.size();
 	aux.costo_total = m_costo_total;
-	
-	// aseguro el tamaño del c_string
-	strncpy(aux.fecha, m_fecha.c_str(), sizeof(aux.fecha) - 1);
-	aux.fecha[sizeof(aux.fecha) - 1] = '\0'; // aseguro el fin de cadena
 	
 	return aux;
 }
 
+/// CRITERIOS DE COMPARACIÓN
+// ordenar por ID
+bool prod_cmp_id(const OrdenProduccion &p1, const OrdenProduccion &p2) {
+	return p1.verId() < p2.verId();
+}
+
+// ordenar por cantidad
+bool prod_cmp_cant(const OrdenProduccion &p1, const OrdenProduccion &p2) {
+	return p1.verCantidadTotalItems() < p2.verCantidadTotalItems();
+}
+
+// ordenar por costo
+bool prod_cmp_costo(const OrdenProduccion &p1, const OrdenProduccion &p2) {
+	return p1.verCostoTotal() < p2.verCostoTotal();
+}
+
+// ordenar por fecha 
+bool prod_cmp_fecha(const OrdenProduccion &p1, const OrdenProduccion &p2) {
+	return p1.verFecha() < p2.verFecha();
+}

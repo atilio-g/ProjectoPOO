@@ -195,6 +195,11 @@ void WinPrincipalHija::ins_editarSeleccion()
 	{
 		// si los datos son correctos: modifica el insumo en la grilla y guarda en archivo
 		ins_cargarFila( fila );
+		
+		// actualizo grilla de recetas para actualizar costos
+		int cant = m_gestor->verCantidadRecetas();
+		for (int i=0; i<cant; ++i)
+			rec_cargarFila(i);
 	}
 }
 
@@ -383,18 +388,44 @@ void WinPrincipalHija::prod_cargarFila(int pos)
 {
 	OrdenProduccion prod = ( m_gestor->verVectorProduccion() )[pos];
 	
+	// formato DD/MM/AAAA 
+	int f = prod.verFecha();
+	wxString fecha_str = wxString::Format("%02d/%02d/%04d", f%100, (f/100)%100, f/10000);
+	
 	m_prod_grilla->SetCellValue( pos, 0, num_to_wx( prod.verId() ) );
-	m_prod_grilla->SetCellValue( pos, 1, str_to_wx( prod.verFecha() ) );
+	m_prod_grilla->SetCellValue( pos, 1, fecha_str );
 	m_prod_grilla->SetCellValue( pos, 2, num_to_wx( prod.verCantidadTotalItems() ) );
 	m_prod_grilla->SetCellValue( pos, 3, num_to_wx( prod.verCostoTotal() ) );
 }
 
 void WinPrincipalHija::prod_cargarFila(int fila, OrdenProduccion prod)
 {	
+	int f = prod.verFecha();
+	wxString fecha_str = wxString::Format("%02d/%02d/%04d", f%100, (f/100)%100, f/10000);
+	
 	m_prod_grilla->SetCellValue( fila, 0, num_to_wx( prod.verId() ) );
-	m_prod_grilla->SetCellValue( fila, 1, str_to_wx( prod.verFecha() ) );
+	m_prod_grilla->SetCellValue( fila, 1, fecha_str );
 	m_prod_grilla->SetCellValue( fila, 2, num_to_wx( prod.verCantidadTotalItems() ) );
 	m_prod_grilla->SetCellValue( fila, 3, num_to_wx( prod.verCostoTotal() ) );
+}
+
+
+void WinPrincipalHija::prod_OnGrillaLabelClick( wxGridEvent& event ) 
+{
+	int col = event.GetCol();
+	switch (col) 
+	{
+	case 0 : m_gestor->ordenarProducciones(prod_cmp_id); break;
+	case 1 : m_gestor->ordenarProducciones(prod_cmp_fecha); break;
+	case 2 : m_gestor->ordenarProducciones(prod_cmp_cant); break;
+	case 3 : m_gestor->ordenarProducciones(prod_cmp_costo); break;
+	default : return;
+	}
+	
+	// actualiza grilla 
+	int cant = m_gestor->verCantidadProducciones();
+	for (int i=0; i<cant; ++i)
+		prod_cargarFila(i);
 }
 
 void WinPrincipalHija::prod_verSeleccion()
@@ -460,5 +491,3 @@ void WinPrincipalHija::prod_OnClickVaciar( wxCommandEvent& event )
 
 
 /////////////////////// FIN PARTE DE PRODUCCION ////////////////////////
-
-

@@ -17,7 +17,7 @@ struct ItemOrden {
 **/
 struct RegistroProduccion {
 	int id;
-	char fecha[15]; 
+	int fecha; 
 	int cant_items;
 	float costo_total;
 };
@@ -25,11 +25,9 @@ struct RegistroProduccion {
 /// clase que representa una orden de producción
 class OrdenProduccion {
 private:
-	// id único
-	int m_id;
-	
 	// datos
-	std::string m_fecha;
+	int m_id; // id único
+	int m_fecha;
 	float m_costo_total;
 	
 	// lista de produccion
@@ -37,11 +35,11 @@ private:
 	
 public:
 	/// crea una orden sólo con la fecha
-	OrdenProduccion(std::string fecha = "");
+	OrdenProduccion(int fecha);
 	
 	/// ver datos
 	int verId() const;
-	std::string verFecha() const;
+	int verFecha() const;
 	float verCostoTotal() const;
 	
 	/// devuelve la cantidad de diferentes items
@@ -60,7 +58,7 @@ public:
 	void establecerCostoTotal(float costo_historico);
 	
 	/// establece valor para m_fecha
-	void establecerFecha(std::string fecha);
+	void establecerFecha(int fecha);
 	
 	/// agrega un producto y va sumando al costo total
 	void agregarItem(int id_receta=-1, std::string nombre_receta="", int cantidad=0, float costo_unitario=0);
@@ -69,6 +67,14 @@ public:
 	RegistroProduccion crearRegistro() const;
 	
 };
+
+/// criterios para comparar dos órdenes; usados para la función sort
+bool prod_cmp_id(const OrdenProduccion &p1, const OrdenProduccion &p2);
+bool prod_cmp_cant(const OrdenProduccion &p1, const OrdenProduccion &p2);
+bool prod_cmp_costo(const OrdenProduccion &p1, const OrdenProduccion &p2);
+bool prod_cmp_fecha(const OrdenProduccion &p1, const OrdenProduccion &p2);
+
+
 
 #endif
 

@@ -42,6 +42,7 @@ protected:
 	void prod_cargarFila( int fila, OrdenProduccion prod );
 	void prod_verSeleccion();
 	
+	void prod_OnGrillaLabelClick( wxGridEvent& event )  override;
 	void prod_OnClickVer( wxCommandEvent& event )  override;
 	void prod_OnGrillaDobleClick( wxGridEvent& event )  override;
 	void prod_OnClickNuevo( wxCommandEvent& event )  override;

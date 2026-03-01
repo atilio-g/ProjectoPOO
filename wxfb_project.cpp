@@ -166,10 +166,10 @@ WinPrincipalBase::WinPrincipalBase( wxWindow* parent, wxWindowID id, const wxStr
 	m_prod_grilla->SetMargins( 0, 0 );
 
 	// Columns
-	m_prod_grilla->SetColSize( 0, 0 );
+	m_prod_grilla->SetColSize( 0, 40 );
 	m_prod_grilla->SetColSize( 1, 225 );
-	m_prod_grilla->SetColSize( 2, 180 );
-	m_prod_grilla->SetColSize( 3, 275 );
+	m_prod_grilla->SetColSize( 2, 150 );
+	m_prod_grilla->SetColSize( 3, 255 );
 	m_prod_grilla->EnableDragColMove( false );
 	m_prod_grilla->EnableDragColSize( true );
 	m_prod_grilla->SetColLabelValue( 0, wxT("ID") );
@@ -187,7 +187,7 @@ WinPrincipalBase::WinPrincipalBase( wxWindow* parent, wxWindowID id, const wxStr
 
 	// Cell Defaults
 	m_prod_grilla->SetDefaultCellAlignment( wxALIGN_LEFT, wxALIGN_CENTER );
-	bSizer411->Add( m_prod_grilla, 1, wxALL|wxEXPAND, 10 );
+	bSizer411->Add( m_prod_grilla, 1, wxALL|wxEXPAND, 15 );
 
 	wxBoxSizer* bSizer55;
 	bSizer55 = new wxBoxSizer( wxHORIZONTAL );
@@ -232,6 +232,7 @@ WinPrincipalBase::WinPrincipalBase( wxWindow* parent, wxWindowID id, const wxStr
 	m_recetas_grilla->Connect( wxEVT_GRID_CELL_LEFT_DCLICK, wxGridEventHandler( WinPrincipalBase::rec_OnGrillaDobleClick ), NULL, this );
 	m_recetas_grilla->Connect( wxEVT_GRID_LABEL_LEFT_CLICK, wxGridEventHandler( WinPrincipalBase::rec_OnGrillaLabelClick ), NULL, this );
 	m_prod_grilla->Connect( wxEVT_GRID_CELL_LEFT_DCLICK, wxGridEventHandler( WinPrincipalBase::prod_OnGrillaDobleClick ), NULL, this );
+	m_prod_grilla->Connect( wxEVT_GRID_LABEL_LEFT_CLICK, wxGridEventHandler( WinPrincipalBase::prod_OnGrillaLabelClick ), NULL, this );
 	m_prod_btn_nuevo->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( WinPrincipalBase::prod_OnClickNuevo ), NULL, this );
 	m_prod_btn_ver->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( WinPrincipalBase::prod_OnClickVer ), NULL, this );
 	m_prod_btn_vaciar->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( WinPrincipalBase::prod_OnClickVaciar ), NULL, this );
@@ -253,6 +254,7 @@ WinPrincipalBase::~WinPrincipalBase()
 	m_recetas_grilla->Disconnect( wxEVT_GRID_CELL_LEFT_DCLICK, wxGridEventHandler( WinPrincipalBase::rec_OnGrillaDobleClick ), NULL, this );
 	m_recetas_grilla->Disconnect( wxEVT_GRID_LABEL_LEFT_CLICK, wxGridEventHandler( WinPrincipalBase::rec_OnGrillaLabelClick ), NULL, this );
 	m_prod_grilla->Disconnect( wxEVT_GRID_CELL_LEFT_DCLICK, wxGridEventHandler( WinPrincipalBase::prod_OnGrillaDobleClick ), NULL, this );
+	m_prod_grilla->Disconnect( wxEVT_GRID_LABEL_LEFT_CLICK, wxGridEventHandler( WinPrincipalBase::prod_OnGrillaLabelClick ), NULL, this );
 	m_prod_btn_nuevo->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( WinPrincipalBase::prod_OnClickNuevo ), NULL, this );
 	m_prod_btn_ver->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( WinPrincipalBase::prod_OnClickVer ), NULL, this );
 	m_prod_btn_vaciar->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( WinPrincipalBase::prod_OnClickVaciar ), NULL, this );
@@ -613,9 +615,9 @@ DialogProducciones::DialogProducciones( wxWindow* parent, wxWindowID id, const w
 
 	bSizer23->Add( 0, 0, 1, wxEXPAND, 5 );
 
-	m_staticText15 = new wxStaticText( this, wxID_ANY, wxT("Costo:"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_staticText15->Wrap( -1 );
-	bSizer23->Add( m_staticText15, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+	m_statictext_costo = new wxStaticText( this, wxID_ANY, wxT("Costo:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_statictext_costo->Wrap( -1 );
+	bSizer23->Add( m_statictext_costo, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
 
 	m_text_costo = new wxStaticText( this, wxID_ANY, wxT("$ 0.00"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_text_costo->Wrap( -1 );

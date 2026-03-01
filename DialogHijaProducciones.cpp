@@ -38,8 +38,12 @@ DialogHijaProducciones::DialogHijaProducciones(wxWindow *parent,
 		if (orden == nullptr) return;
 		
 		// seteo la fecha
-		wxDateTime fecha_historica;
-		fecha_historica.ParseFormat(orden->verFecha(), "%d/%m/%Y");
+		int f = orden->verFecha();
+		int dia = f % 100;
+		int mes = (f / 100) % 100;
+		int anio = f / 10000;
+		
+		wxDateTime fecha_historica(dia, (wxDateTime::Month)(mes-1), anio);
 		m_date_fecha->SetValue(fecha_historica);
 		
 		// copio los items de la orden a nuestro carrito temporal para dibujarlos
@@ -90,6 +94,7 @@ DialogHijaProducciones::DialogHijaProducciones(wxWindow *parent,
 	fuente_total.SetPointSize(11); // Letra más grande
 	fuente_total.MakeBold();       // Negrita
 	m_text_costo->SetFont(fuente_total);
+	m_statictext_costo->SetFont(fuente_total);
 	
 	ActualizarGrilla();	
 }
@@ -221,12 +226,17 @@ void DialogHijaProducciones::OnClickConfirmar( wxCommandEvent& event )
 		return;
 	}
 	
-	// obtengo la fecha de hoy
-	wxDateTime fecha_seleccionada = m_date_fecha->GetValue();
-	std::string fecha_str = wx_to_str( fecha_seleccionada.Format("%d/%m/%Y") );
+	// obtengo la fecha seleccionada
+	wxDateTime fecha_sel = m_date_fecha->GetValue();
+	
+	int anio = fecha_sel.GetYear();
+	int mes = fecha_sel.GetMonth();
+	int dia = fecha_sel.GetDay();
+	
+	int fecha_int = (anio * 10000) + (mes * 100) + dia;
 	
 	// armo la OrdenProduccion temporal
-	OrdenProduccion nueva_orden(fecha_str);
+	OrdenProduccion nueva_orden(fecha_int);
 	size_t cant_prod = m_carrito.size();
 	for (size_t i=0; i<cant_prod; ++i) 
 	{
